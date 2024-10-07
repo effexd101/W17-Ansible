@@ -1,0 +1,37 @@
+---
+- hosts: all
+  become: True
+  ignore_errors: 1
+  gather_facts: yes
+  #become_user: root
+
+  tasks:
+      -  name: Create a file
+         file:
+           path: /tmp/playbookfile
+           mode: '0755'
+           state: touch
+         tags:
+            - file
+      - name: Create a directory
+        file:
+          path: /tmp/dir
+          mode: '0700'
+          state: directory
+      - name: Create group
+        group:
+           name: security
+           state: present  
+           tags:
+              - cmd  
+      - name: Create user Efe
+        user:
+          comment: Efe Admin
+          shell: /bin/bash
+          group: security
+          name: Efe
+        when: ansible_os_family  == "Debian" or ansible_processor_nproc > 2 
+      - name: Check uptime
+        command: uptime
+      - name: Check the date
+        shell: cat /etc/passwd | grep efe
